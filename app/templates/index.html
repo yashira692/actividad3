@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Predictor Mundial | Salas y Puntajes</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Laboratorio calificado · Docker + Balanceo</p>
+      <h1>Predictor de resultados del Mundial</h1>
+      <p class="subtitle">Crea salas, invita participantes, registra predicciones, publica resultados y calcula puntos automáticamente.</p>
+    </div>
+    <div class="node-card">
+      <span>Nodo atendiendo</span>
+      <strong>{{ host }}</strong>
+      <small>Actualiza la página para evidenciar el balanceo con Nginx.</small>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>1. Crear sala</h2>
+      <form id="createRoomForm" class="grid-form">
+        <label>Nombre de sala
+          <input name="name" placeholder="Ej. Mundial 2026 - Aula" required />
+        </label>
+        <label>Responsable / participante inicial
+          <input name="owner_name" placeholder="Ej. Jaime" required />
+        </label>
+        <button type="submit">Crear sala</button>
+      </form>
+      <div id="createdRoom" class="notice hidden"></div>
+    </section>
+
+    <section class="panel">
+      <h2>2. Entrar a una sala</h2>
+      <form id="joinRoomForm" class="grid-form">
+        <label>Código de sala
+          <input name="code" id="roomCodeInput" placeholder="Ej. A1B2C3" value="{{ initial_code|default('', true) }}" required />
+        </label>
+        <label>Nombre del participante
+          <input name="participant_name" placeholder="Ej. Ana" required />
+        </label>
+        <button type="submit">Entrar / registrarme</button>
+      </form>
+      <div id="activeRoom" class="notice hidden"></div>
+    </section>
+
+    <section class="panel wide">
+      <div class="section-title">
+        <h2>3. Partidos y predicciones</h2>
+        <button id="refreshMatchesBtn" type="button">Actualizar partidos</button>
+      </div>
+      <div id="matchesList" class="cards"></div>
+    </section>
+
+    <section class="panel wide">
+      <div class="section-title">
+        <h2>4. Registrar nuevo partido</h2>
+        <span class="hint">Función administrativa para la demo.</span>
+      </div>
+      <form id="createMatchForm" class="match-form">
+        <input name="home_team" placeholder="Equipo local" required />
+        <input name="away_team" placeholder="Equipo visitante" required />
+        <input name="starts_at" type="datetime-local" required />
+        <button type="submit">Crear partido</button>
+      </form>
+    </section>
+
+    <section class="panel wide">
+      <div class="section-title">
+        <h2>5. Tabla general</h2>
+        <button id="refreshLeaderboardBtn" type="button">Actualizar tabla</button>
+      </div>
+      <div id="stats" class="stats"></div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Participante</th>
+              <th>Partidos evaluados</th>
+              <th>Puntos base + anticipación</th>
+              <th>Bonus racha</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <template id="matchTemplate">
+    <article class="match-card">
+      <div class="match-head">
+        <h3></h3>
+        <span class="status"></span>
+      </div>
+      <p class="match-date"></p>
+      <form class="prediction-form">
+        <input name="pred_home" type="number" min="0" placeholder="Local" required />
+        <strong>-</strong>
+        <input name="pred_away" type="number" min="0" placeholder="Visitante" required />
+        <button type="submit">Guardar predicción</button>
+      </form>
+      <form class="result-form">
+        <input name="home_score" type="number" min="0" placeholder="Resultado local" required />
+        <strong>-</strong>
+        <input name="away_score" type="number" min="0" placeholder="Resultado visitante" required />
+        <button type="submit">Publicar resultado</button>
+      </form>
+    </article>
+  </template>
+
+  <script>
+    window.INITIAL_ROOM_CODE = "{{ initial_code|default('', true) }}";
+  </script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
